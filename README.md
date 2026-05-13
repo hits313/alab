@@ -83,7 +83,7 @@ git clone https://github.com/hits313/alab.git ~/tools/android-lab
 
 **Native:** see §4 in [docs/ALAB-INSTALL.md](docs/ALAB-INSTALL.md) — winget + Git Bash.
 
-📄 **Full install guide:** [docs/ALAB-INSTALL.md](docs/ALAB-INSTALL.md) · [docs/ALAB-INSTALL.pdf](docs/ALAB-INSTALL.pdf)
+📄 **Full install guide:** [docs/ALAB-INSTALL.md](docs/ALAB-INSTALL.md) · [docs/ALAB-Framework-Guide.pdf](docs/ALAB-Framework-Guide.pdf)
 
 ---
 
@@ -171,6 +171,6 @@ MIT — see [LICENSE](LICENSE).
 
 **developed by hits** · *built by human + AI (Opus 4.6)*
 
-[install guide](docs/ALAB-INSTALL.md) · [PDF](docs/ALAB-INSTALL.pdf) · [issues](https://github.com/hits313/alab/issues)
+[install guide](docs/ALAB-INSTALL.md) · [PDF](docs/ALAB-Framework-Guide.pdf) · [issues](https://github.com/hits313/alab/issues)
 
 </div>

@@ -483,8 +483,8 @@ gemini -p "$(cat ~/tools/android-lab/docs/ALAB-INSTALL.md) Now boot the lab and 
 │   └── cacert.pem              # converted, auto-generated
 ├── apks/                       # drop targets here
 └── docs/
-    ├── ALAB-INSTALL.md         # this file
-    └── ALAB-INSTALL.pdf
+    ├── ALAB-INSTALL.md             # this file
+    └── ALAB-Framework-Guide.pdf    # printable PDF
 ```
 
 ---
