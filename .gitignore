@@ -1,0 +1,36 @@
+# binaries / large blobs — pull these yourself per install guide
+frida/frida-server
+frida/*.xz
+magisk/*.apk
+jadx/
+dex2jar/
+
+# target APKs (never commit clients' code)
+apks/
+*.apk
+
+# Burp certs (per-user)
+burp/cacert.der
+burp/cacert.pem
+
+# emulator state
+*.log
+*.lock
+hardware-qemu.ini.lock
+
+# editor / OS junk
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# python
+__pycache__/
+*.pyc
+.venv/
+
+# claude / agent state
+.claude/projects/
+.claude/todos/

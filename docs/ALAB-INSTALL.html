@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>alab — Android Pentest Lab</title>
+<style>
+@page { size: A4; margin: 16mm 12mm; background: #0a0c0f; }
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0;
+  background: #0a0c0f;
+  color: #d6dde4;
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: 10pt;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── COVER ─────────────────────────────────────────── */
+.cover {
+  page-break-after: always;
+  background:
+    radial-gradient(ellipse at top right, rgba(255, 51, 102, 0.10) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom left, rgba(0, 255, 136, 0.08) 0%, transparent 50%),
+    linear-gradient(180deg, #14181d 0%, #0a0c0f 80%);
+  padding: 35mm 10mm 18mm;
+  min-height: 260mm;
+  position: relative;
+  border-left: 4px solid #00ff88;
+}
+.cover-tag {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  color: #00ff88;
+  font-size: 8.5pt;
+  letter-spacing: 4px;
+  margin-bottom: 8mm;
+  text-transform: uppercase;
+}
+.cover-title {
+  font-size: 64pt;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -3px;
+  line-height: 0.95;
+  margin: 0 0 5mm;
+  text-shadow: 0 0 40px rgba(255, 51, 102, 0.3);
+}
+.cover-title .accent { color: #ff3366; }
+.cover-sub {
+  font-size: 15pt;
+  color: #8a96a3;
+  font-weight: 300;
+  margin-bottom: 4mm;
+  max-width: 140mm;
+}
+.cover-by {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9pt;
+  color: #00ff88;
+  margin-bottom: 8mm;
+  letter-spacing: 1px;
+}
+.cover-ascii {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 8.5pt;
+  color: #ff3366;
+  line-height: 1.15;
+  white-space: pre;
+  margin: 6mm 0;
+  text-shadow: 0 0 12px rgba(255, 51, 102, 0.5);
+}
+.cover-meta {
+  position: absolute;
+  bottom: 18mm;
+  left: 10mm;
+  right: 10mm;
+  border-top: 1px solid #2a323c;
+  padding-top: 6mm;
+  display: flex;
+  justify-content: space-between;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8pt;
+  color: #6c7a89;
+  letter-spacing: 1px;
+}
+.cover-meta .badge { color: #00ff88; }
+.cover-stack {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 3mm;
+  margin-top: 10mm;
+}
+.cover-stack .pill {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid #2a323c;
+  border-left: 2px solid #00ff88;
+  padding: 2.5mm 4mm;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8.5pt;
+}
+.cover-stack .pill b { color: #ffffff; }
+.cover-stack .pill span { color: #8a96a3; }
+
+/* ── HEADINGS ──────────────────────────────────────── */
+h1 {
+  font-size: 22pt;
+  color: #ffffff;
+  font-weight: 800;
+  margin: 14mm 0 4mm;
+  padding-bottom: 2mm;
+  border-bottom: 2px solid #ff3366;
+  letter-spacing: -0.5px;
+  page-break-before: always;
+  page-break-after: avoid;
+}
+h1:first-of-type { page-break-before: avoid; }
+h1 .num {
+  color: #00ff88;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 17pt;
+  margin-right: 4mm;
+}
+h2 {
+  font-size: 13.5pt;
+  color: #ffffff;
+  font-weight: 700;
+  margin: 8mm 0 3mm;
+  padding-left: 4mm;
+  border-left: 3px solid #00ff88;
+  page-break-after: avoid;
+}
+h3 {
+  font-size: 11pt;
+  color: #d6dde4;
+  font-weight: 600;
+  margin: 5mm 0 2mm;
+  page-break-after: avoid;
+}
+p { margin: 0 0 3mm; color: #c5cdd6; }
+
+/* ── PLATFORM RIBBON ───────────────────────────────── */
+.os-ribbon {
+  display: flex;
+  gap: 3mm;
+  margin: 2mm 0 6mm;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8pt;
+}
+.os-ribbon .chip {
+  padding: 1.5mm 4mm;
+  border: 1px solid #2a323c;
+  border-radius: 12px;
+  color: #8a96a3;
+}
+.os-ribbon .chip.active {
+  border-color: #00ff88;
+  color: #00ff88;
+  background: rgba(0,255,136,0.05);
+}
+
+/* ── CODE ──────────────────────────────────────────── */
+code {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  background: #181d23;
+  color: #00ff88;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 9pt;
+  border: 1px solid #2a323c;
+}
+pre {
+  background: #0f1318;
+  border: 1px solid #2a323c;
+  border-left: 3px solid #00ff88;
+  border-radius: 4px;
+  padding: 4mm 5mm;
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 8.5pt;
+  line-height: 1.5;
+  color: #d6dde4;
+  margin: 3mm 0;
+  page-break-inside: avoid;
+}
+pre code { background: transparent; border: none; color: inherit; padding: 0; font-size: inherit; }
+.comment { color: #6c7a89; font-style: italic; }
+
+/* ── TABLES ────────────────────────────────────────── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 4mm 0;
+  font-size: 9pt;
+  page-break-inside: avoid;
+}
+th {
+  background: #181d23;
+  color: #00ff88;
+  text-align: left;
+  padding: 2.5mm 3mm;
+  border-bottom: 2px solid #ff3366;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8.5pt;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+td {
+  padding: 2.5mm 3mm;
+  border-bottom: 1px solid #2a323c;
+  color: #c5cdd6;
+  vertical-align: top;
+}
+tr:nth-child(even) td { background: rgba(255,255,255,0.015); }
+td code { font-size: 8.3pt; }
+
+ul, ol { margin: 2mm 0 4mm; padding-left: 6mm; color: #c5cdd6; }
+li { margin: 1mm 0; }
+ul li::marker { color: #ff3366; }
+ol li::marker { color: #00ff88; font-weight: 700; }
+
+/* ── CALLOUTS ──────────────────────────────────────── */
+.callout {
+  background: rgba(255, 51, 102, 0.06);
+  border-left: 3px solid #ff3366;
+  padding: 3mm 4mm;
+  margin: 4mm 0;
+  border-radius: 0 4px 4px 0;
+  page-break-inside: avoid;
+}
+.callout b { color: #ff3366; }
+.callout.ok { background: rgba(0, 255, 136, 0.06); border-left-color: #00ff88; }
+.callout.ok b { color: #00ff88; }
+.callout.win { background: rgba(102, 217, 239, 0.06); border-left-color: #66d9ef; }
+.callout.win b { color: #66d9ef; }
+
+/* ── FOOTER ────────────────────────────────────────── */
+.footer-rule { border-top: 1px solid #2a323c; margin: 12mm 0 3mm; }
+.footer-text {
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8pt;
+  color: #6c7a89;
+  letter-spacing: 1px;
+}
+
+strong, b { color: #ffffff; }
+em { color: #ffcc66; font-style: normal; }
+a { color: #66d9ef; text-decoration: none; }
+hr { border: none; border-top: 1px solid #2a323c; margin: 8mm 0; }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════ COVER ════════════════════ -->
+<div class="cover">
+  <div class="cover-tag">// ANDROID · PENTEST · FRAMEWORK</div>
+  <div class="cover-title">a<span class="accent">l</span>ab</div>
+  <div class="cover-sub">Zero-Studio Android Pentest Lab — Install &amp; Operations Guide</div>
+  <div class="cover-by">// developed by hits  ·  built by human + AI (Opus 4.6)</div>
+
+  <div class="cover-ascii">  ██████╗ ██╗      █████╗ ██████╗
+  ██╔══██╗██║     ██╔══██╗██╔══██╗
+  ███████║██║     ███████║██████╔╝
+  ██╔══██║██║     ██╔══██║██╔══██╗
+  ██║  ██║███████╗██║  ██║██████╔╝
+  ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝</div>
+
+  <div class="cover-stack">
+    <div class="pill"><b>Device</b> · <span>Pixel 6 · Android 13 · API 33</span></div>
+    <div class="pill"><b>Frida</b> · <span>17.2.14 · objection · jadx</span></div>
+    <div class="pill"><b>Root</b> · <span>Magisk 25.2 · Zygisk · DenyList</span></div>
+    <div class="pill"><b>Accel</b> · <span>KVM · HVF · Hyper-V</span></div>
+    <div class="pill"><b>Proxy</b> · <span>Burp system-cert · 10.0.2.2:8080</span></div>
+    <div class="pill"><b>Platforms</b> · <span>Linux · macOS · Windows</span></div>
+    <div class="pill"><b>Agents</b> · <span>Claude Code · Gemini CLI ready</span></div>
+    <div class="pill"><b>License</b> · <span>MIT · open source</span></div>
+  </div>
+
+  <div class="cover-meta">
+    <div>v2.0 · 2026-05-13</div>
+    <div class="badge">// github.com/hits313/alab</div>
+  </div>
+</div>
+
+<!-- ════════════════════ §1 ════════════════════ -->
+<h1><span class="num">01</span>Requirements</h1>
+
+<table>
+<tr><th>Component</th><th>Minimum</th><th>Notes</th></tr>
+<tr><td>OS</td><td>Linux / macOS / Windows</td><td>All three covered below</td></tr>
+<tr><td>CPU</td><td>x86_64 VT-x/AMD-V <i>or</i> Apple Silicon</td><td>Hardware virtualization mandatory</td></tr>
+<tr><td>RAM</td><td>8 GB system</td><td>AVD: 3 GB · Burp + Frida: ~1 GB</td></tr>
+<tr><td>Disk</td><td>25 GB free</td><td>SDK ~6 GB · sysimg ~5 GB · AVD ~10 GB</td></tr>
+<tr><td>Python</td><td>3.10+</td><td>Frida tools · objection · apkleaks</td></tr>
+<tr><td>Java</td><td>OpenJDK 17</td><td>jadx · apktool</td></tr>
+<tr><td>Burp</td><td>Community / Pro</td><td>proxy + CA cert export</td></tr>
+<tr><td>Node.js</td><td>20+ (optional)</td><td>Claude Code · Gemini CLI agents</td></tr>
+</table>
+
+<!-- ════════════════════ §2 LINUX ════════════════════ -->
+<h1><span class="num">02</span>Install — Linux</h1>
+<div class="os-ribbon">
+  <span class="chip active">linux</span>
+  <span class="chip">macos</span>
+  <span class="chip">windows</span>
+</div>
+<p>Tested on Ubuntu 22.04, Pop!_OS, Debian 12. For Fedora/Arch, adjust the package manager.</p>
+
+<h2>2.1 · Pre-flight</h2>
+<pre>ls /dev/kvm                          <span class="comment"># must exist</span>
+egrep -c '(vmx|svm)' /proc/cpuinfo   <span class="comment"># &gt; 0</span>
+free -g                              <span class="comment"># ≥ 8</span>
+df -h ~                              <span class="comment"># ≥ 25 G</span></pre>
+
+<div class="callout"><b>KVM missing?</b><br>
+<code>sudo apt install qemu-kvm libvirt-daemon-system &amp;&amp; sudo usermod -aG kvm,libvirt $USER</code> then log out/in.</div>
+
+<h2>2.2 · System packages</h2>
+<pre>sudo apt update
+sudo apt install -y openjdk-17-jdk python3-pip python3-venv \
+  qemu-kvm adb scrcpy unzip wget curl git apktool sqlite3 openssl</pre>
+
+<h2>2.3 · Android SDK</h2>
+<pre>mkdir -p ~/Android/Sdk/cmdline-tools &amp;&amp; cd /tmp
+wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+unzip commandlinetools-linux-*.zip
+mv cmdline-tools ~/Android/Sdk/cmdline-tools/latest
+
+export ANDROID_SDK_ROOT=$HOME/Android/Sdk
+export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/emulator:$PATH
+
+yes | sdkmanager --licenses
+sdkmanager "platform-tools" "emulator" "platforms;android-33" \
+           "system-images;android-33;google_apis;x86_64"</pre>
+<div class="callout"><b>Critical:</b> use <code>google_apis</code>, <b>not</b> <code>google_apis_playstore</code>. PlayStore images block <code>adb root</code>.</div>
+
+<h2>2.4 · Create AVD</h2>
+<pre>echo "no" | avdmanager create avd \
+  -n Pixel6_API33_root \
+  -k "system-images;android-33;google_apis;x86_64" \
+  -d "pixel_6"
+
+AVD=~/.android/avd/Pixel6_API33_root.avd/config.ini
+sed -i 's/^hw.ramSize=.*/hw.ramSize=3072/' $AVD
+sed -i 's/^hw.cpu.ncore=.*/hw.cpu.ncore=6/' $AVD
+echo "disk.dataPartition.size=4096M" &gt;&gt; $AVD</pre>
+
+<h2>2.5 · Frida + tooling</h2>
+<pre>pip install --user frida-tools==17.2.14 objection apkleaks androguard
+
+mkdir -p ~/tools/android-lab/frida &amp;&amp; cd ~/tools/android-lab/frida
+wget https://github.com/frida/frida/releases/download/17.2.14/frida-server-17.2.14-android-x86_64.xz
+xz -d frida-server-*.xz &amp;&amp; mv frida-server-* frida-server &amp;&amp; chmod +x frida-server</pre>
+
+<h2>2.6 · jadx · dex2jar · Magisk</h2>
+<pre>cd ~/tools/android-lab
+wget https://github.com/skylot/jadx/releases/download/v1.5.0/jadx-1.5.0.zip
+unzip jadx-1.5.0.zip -d jadx
+wget https://github.com/pxb1988/dex2jar/releases/download/v2.4/dex-tools-v2.4.zip
+unzip dex-tools-v2.4.zip -d dex2jar
+
+mkdir -p magisk &amp;&amp; cd magisk
+wget -O Magisk-v28.1.apk https://github.com/topjohnwu/Magisk/releases/download/v28.1/Magisk-v28.1.apk</pre>
+
+<h2>2.7 · Clone alab + aliases</h2>
+<pre>git clone https://github.com/hits313/alab.git ~/tools/android-lab/repo
+cp ~/tools/android-lab/repo/start-lab.sh ~/tools/android-lab/
+chmod +x ~/tools/android-lab/start-lab.sh
+
+<span class="comment"># ~/.zshrc</span>
+export ANDROID_SDK_ROOT=$HOME/Android/Sdk
+export PATH=$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/emulator:$HOME/.local/bin:$HOME/tools/android-lab/jadx/bin:$PATH
+alias alab='bash ~/tools/android-lab/start-lab.sh'</pre>
+
+<!-- ════════════════════ §3 macOS ════════════════════ -->
+<h1><span class="num">03</span>Install — macOS</h1>
+<div class="os-ribbon">
+  <span class="chip">linux</span>
+  <span class="chip active">macos</span>
+  <span class="chip">windows</span>
+</div>
+<p>Tested on macOS 14 Sonoma — Apple Silicon &amp; Intel. HVF replaces KVM and runs out of the box.</p>
+
+<h2>3.1 · Homebrew base</h2>
+<pre>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+brew install openjdk@17 python@3.11 wget unzip git \
+             android-platform-tools scrcpy sqlite openssl@3
+brew install --cask android-commandlinetools
+
+sudo ln -sfn $(brew --prefix)/opt/openjdk@17/libexec/openjdk.jdk \
+             /Library/Java/JavaVirtualMachines/openjdk-17.jdk</pre>
+
+<h2>3.2 · Android SDK</h2>
+<pre>export ANDROID_SDK_ROOT=$HOME/Library/Android/sdk
+mkdir -p $ANDROID_SDK_ROOT
+export PATH=$(brew --prefix android-commandlinetools)/bin:$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/emulator:$PATH
+
+yes | sdkmanager --licenses
+<span class="comment"># Apple Silicon → arm64-v8a · Intel → x86_64</span>
+ARCH=$(uname -m); [[ "$ARCH" == "arm64" ]] &amp;&amp; IMG="arm64-v8a" || IMG="x86_64"
+sdkmanager "platform-tools" "emulator" "platforms;android-33" \
+           "system-images;android-33;google_apis;$IMG"</pre>
+
+<h2>3.3 · Create AVD</h2>
+<pre>echo "no" | avdmanager create avd \
+  -n Pixel6_API33_root \
+  -k "system-images;android-33;google_apis;$IMG" \
+  -d "pixel_6"</pre>
+
+<h2>3.4 · Frida + tooling</h2>
+<pre>pip3 install --user frida-tools==17.2.14 objection apkleaks androguard
+
+mkdir -p ~/tools/android-lab/frida &amp;&amp; cd ~/tools/android-lab/frida
+ARCH=$(uname -m); [[ "$ARCH" == "arm64" ]] &amp;&amp; FA="arm64" || FA="x86_64"
+wget https://github.com/frida/frida/releases/download/17.2.14/frida-server-17.2.14-android-$FA.xz
+xz -d frida-server-*.xz &amp;&amp; mv frida-server-* frida-server &amp;&amp; chmod +x frida-server</pre>
+
+<h2>3.5 · Clone alab + zshrc</h2>
+<pre>mkdir -p ~/tools &amp;&amp; git clone https://github.com/hits313/alab.git ~/tools/android-lab
+chmod +x ~/tools/android-lab/start-lab.sh
+
+cat &gt;&gt; ~/.zshrc &lt;&lt;'EOF'
+export ANDROID_SDK_ROOT=$HOME/Library/Android/sdk
+export PATH=$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/emulator:$HOME/.local/bin:$HOME/tools/android-lab/jadx/bin:$PATH
+alias alab='bash ~/tools/android-lab/start-lab.sh'
+EOF
+source ~/.zshrc</pre>
+
+<div class="callout ok"><b>macOS gotchas:</b>
+<ul>
+<li>Apple Silicon: <b>always</b> use <code>arm64-v8a</code> sysimg — x86_64 runs at 5% speed under Rosetta.</li>
+<li>HVF acceleration is automatic; no <code>/dev/kvm</code> setup needed.</li>
+<li>First adb session shows "Allow USB debugging" — accept once.</li>
+</ul></div>
+
+<!-- ════════════════════ §4 WINDOWS ════════════════════ -->
+<h1><span class="num">04</span>Install — Windows</h1>
+<div class="os-ribbon">
+  <span class="chip">linux</span>
+  <span class="chip">macos</span>
+  <span class="chip active">windows</span>
+</div>
+<p>Two paths. WSL2 is <b>strongly recommended</b> — it's just the Linux flow with one extra step. Native is supported but bumpier.</p>
+
+<h2>4.1 · Option A — WSL2 (recommended)</h2>
+<pre><span class="comment"># elevated PowerShell</span>
+wsl --install -d Ubuntu-22.04
+wsl --update</pre>
+<p>Then inside WSL2, follow the Linux flow (§2). One extra detail:</p>
+<pre><span class="comment"># WSL2 needs explicit KVM passthrough — enable Hyper-V on Windows side</span>
+sudo apt install -y qemu-kvm
+ls /dev/kvm   <span class="comment"># should exist on WSL2 kernel 5.10+</span></pre>
+<p>To use Burp on Windows with AVD in WSL2:</p>
+<pre><span class="comment"># Windows host IP from inside WSL</span>
+ip route show | grep default | awk '{print $3}'   <span class="comment"># → 172.x.x.1</span>
+<span class="comment"># Burp listens 0.0.0.0:8080 on Windows; point AVD proxy at this IP</span></pre>
+
+<h2>4.2 · Option B — Native Windows</h2>
+<pre><span class="comment"># prerequisites via winget</span>
+winget install -e --id EclipseAdoptium.Temurin.17.JDK
+winget install -e --id Python.Python.3.11
+winget install -e --id Git.Git
+winget install -e --id 7zip.7zip</pre>
+<p>Download cmdline-tools and unzip to <code>C:\Android\Sdk\cmdline-tools\latest\</code>:</p>
+<pre>https://dl.google.com/android/repository/commandlinetools-win-11076708_latest.zip</pre>
+<p>Set env vars (System Properties → Environment Variables):</p>
+<pre>ANDROID_SDK_ROOT  =  C:\Android\Sdk
+PATH              +=  C:\Android\Sdk\cmdline-tools\latest\bin
+PATH              +=  C:\Android\Sdk\platform-tools
+PATH              +=  C:\Android\Sdk\emulator</pre>
+<p>In a <b>new</b> PowerShell:</p>
+<pre>sdkmanager --licenses
+sdkmanager "platform-tools" "emulator" "platforms;android-33" `
+           "system-images;android-33;google_apis;x86_64"
+
+echo no | avdmanager create avd -n Pixel6_API33_root `
+  -k "system-images;android-33;google_apis;x86_64" -d "pixel_6"
+
+py -m pip install --user frida-tools==17.2.14 objection apkleaks androguard
+git clone https://github.com/hits313/alab.git C:\tools\android-lab</pre>
+<p><code>start-lab.sh</code> is bash — on native Windows, run it via <b>Git Bash</b>:</p>
+<pre><span class="comment"># Git Bash</span>
+alias alab='bash /c/tools/android-lab/start-lab.sh'
+alab start</pre>
+
+<div class="callout win"><b>Windows gotchas:</b>
+<ul>
+<li>Hyper-V vs HAXM: Windows 11 → Hyper-V (built-in). Older Windows 10 → install Intel HAXM via SDK manager.</li>
+<li>Same rule: <code>google_apis</code>, never <code>playstore</code>.</li>
+<li>Git Bash handles <code>~</code> and <code>/c/</code> — cmd.exe does not.</li>
+<li>Defender may flag <code>frida-server</code> + Magisk. Allow-list <code>C:\tools\android-lab\</code>.</li>
+</ul></div>
+
+<!-- ════════════════════ §5 QUICK START ════════════════════ -->
+<h1><span class="num">05</span>Quick Start</h1>
+
+<pre>alab start          <span class="comment"># boot AVD · auto-root · proxy · zygisk</span>
+alab setup          <span class="comment"># full chain: root + frida + burp-cert + proxy</span>
+alab status         <span class="comment"># device · root · magisk · frida · proxy</span>
+alab stop           <span class="comment"># kill emulator</span></pre>
+
+<h3>Burp wiring · one-time</h3>
+<ol>
+  <li>Burp → Proxy → Proxy settings → Import/Export CA → <b>DER format</b></li>
+  <li>Save to <code>~/tools/android-lab/burp/cacert.der</code></li>
+  <li>Run <code>alab burp-cert</code> (converts → installs as system cert → reboots)</li>
+  <li>Run <code>alab proxy-on</code></li>
+</ol>
+<div class="callout ok"><b>Result:</b> all HTTP/S flows through Burp. No app-level proxy. No user-store cert dance.</div>
+
+<!-- ════════════════════ §6 COMMANDS ════════════════════ -->
+<h1><span class="num">06</span>Command Reference</h1>
+
+<h2>Boot</h2>
+<table>
+<tr><th>Command</th><th>Action</th></tr>
+<tr><td><code>alab start</code></td><td>Boot AVD, auto root, proxy on, zygisk on, denylist on</td></tr>
+<tr><td><code>alab stop</code></td><td>Kill emulator</td></tr>
+<tr><td><code>alab screen</code></td><td>scrcpy mirror (1080p, screen-off on host)</td></tr>
+</table>
+
+<h2>Root / Magisk</h2>
+<table>
+<tr><th>Command</th><th>Action</th></tr>
+<tr><td><code>alab root</code></td><td><code>adb root</code> + remount /system</td></tr>
+<tr><td><code>alab setup</code></td><td>Full chain — root + frida + proxy + magisk</td></tr>
+<tr><td><code>alab magisk</code></td><td>Daemon version + denylist status</td></tr>
+<tr><td><code>alab denylist</code></td><td>Enable Zygisk + DenyList via sqlite3</td></tr>
+<tr><td><code>alab denylist-add com.x.y</code></td><td>Add package to DenyList</td></tr>
+<tr><td><code>alab denylist-ls</code></td><td>List DenyList entries</td></tr>
+</table>
+
+<h2>Intercept</h2>
+<table>
+<tr><th>Command</th><th>Action</th></tr>
+<tr><td><code>alab frida</code></td><td>Push + start frida-server on device</td></tr>
+<tr><td><code>alab frida-stop</code></td><td>Kill frida-server</td></tr>
+<tr><td><code>alab burp-cert</code></td><td>Install Burp CA as system cert + reboot</td></tr>
+<tr><td><code>alab proxy-on</code></td><td>Route all traffic → Burp 10.0.2.2:8080</td></tr>
+<tr><td><code>alab proxy-off</code></td><td>Clear proxy</td></tr>
+</table>
+
+<h2>SSL Unpin</h2>
+<table>
+<tr><th>Command</th><th>Action</th></tr>
+<tr><td><code>alab unpin com.bank.app</code></td><td>objection spawn + <code>android sslpinning disable</code></td></tr>
+<tr><td><code>alab unpin-frida com.bank.app</code></td><td>Frida universal unpin (OkHttp3, TrustKit, TM, WebView, NSC)</td></tr>
+</table>
+
+<h2>APK Analysis</h2>
+<table>
+<tr><th>Command</th><th>Action</th></tr>
+<tr><td><code>alab install app.apk</code></td><td><code>adb install -r</code></td></tr>
+<tr><td><code>alab pull-apk com.x.y</code></td><td>Pull installed APK from device</td></tr>
+<tr><td><code>alab decompile app.apk</code></td><td>jadx → <code>/tmp/jadx-&lt;name&gt;/</code></td></tr>
+<tr><td><code>alab strings app.apk</code></td><td>apkleaks — secrets + endpoints</td></tr>
+<tr><td><code>alab manifest app.apk</code></td><td>Dump decoded AndroidManifest.xml</td></tr>
+</table>
+
+<h2>Device</h2>
+<table>
+<tr><th>Command</th><th>Action</th></tr>
+<tr><td><code>alab screenshot</code></td><td>Save → <code>/tmp/screen.png</code></td></tr>
+<tr><td><code>alab logcat com.x.y</code></td><td>Live logcat filtered by pkg</td></tr>
+<tr><td><code>alab pull-data com.x.y</code></td><td>Pull <code>/data/data/&lt;pkg&gt;</code></td></tr>
+<tr><td><code>alab activities com.x.y</code></td><td>List activities + exported flag</td></tr>
+<tr><td><code>alab launch com.pkg/.Main</code></td><td><code>am start -n &lt;component&gt;</code></td></tr>
+<tr><td><code>alab status</code></td><td>Full status panel</td></tr>
+</table>
+
+<!-- ════════════════════ §7 AGENTS ════════════════════ -->
+<h1><span class="num">07</span>Attaching a CLI Agent</h1>
+<p>The lab is fully scriptable. Both <b>Claude Code</b> and <b>Gemini CLI</b> can drive <code>alab</code> end-to-end — recon, root, unpin, decompile, intercept, report.</p>
+
+<h2>7.1 · Claude Code</h2>
+<pre>npm i -g @anthropic-ai/claude-code
+claude --version
+cd ~/tools/android-lab &amp;&amp; claude</pre>
+<p>Pre-grant alab perms — drop this into <code>~/tools/android-lab/.claude/settings.json</code>:</p>
+<pre>{
+  "permissions": {
+    "allow": [
+      "Bash(alab *)",
+      "Bash(adb *)",
+      "Bash(frida *)",
+      "Bash(frida-ps *)",
+      "Bash(objection *)",
+      "Bash(jadx *)",
+      "Bash(apktool *)",
+      "Bash(apkleaks *)"
+    ]
+  }
+}</pre>
+
+<h3>Sample prompts</h3>
+<pre>&gt; Boot the lab, install /tmp/target.apk, decompile it, list all
+  exported activities, and start frida-server.
+
+&gt; Pull SharedPreferences from com.target.app and look for
+  hardcoded API keys or JWTs.
+
+&gt; Hook all java.net.URL constructors in com.target.app via Frida
+  and dump them live.
+
+&gt; Run apkleaks on /tmp/target.apk and triage every hit into a
+  P1/P2/P3 bucket.</pre>
+
+<h2>7.2 · Gemini CLI</h2>
+<pre>npm i -g @google/gemini-cli
+gemini auth login
+cd ~/tools/android-lab &amp;&amp; gemini
+
+&gt; Use the alab framework at start-lab.sh — read it, understand
+  the commands, then boot the emulator, install /tmp/target.apk,
+  and decompile it with jadx.</pre>
+<p>YOLO / auto-approve (only on trusted alab targets): <code>gemini --yolo</code></p>
+
+<h2>7.3 · Tool-call patterns both CLIs follow</h2>
+<table>
+<tr><th>Phase</th><th>Commands invoked</th></tr>
+<tr><td>Bring-up</td><td><code>alab start &amp;&amp; alab setup</code></td></tr>
+<tr><td>APK staging</td><td><code>alab install</code> → <code>alab decompile</code></td></tr>
+<tr><td>Static recon</td><td><code>alab strings</code> + grep <code>/tmp/jadx-x/sources</code></td></tr>
+<tr><td>Manifest review</td><td><code>alab manifest</code> + parse exported components</td></tr>
+<tr><td>Dynamic hook</td><td><code>alab unpin-frida com.x.y</code> · <code>frida -U -n &lt;p&gt; -l h.js</code></td></tr>
+<tr><td>Traffic capture</td><td><code>alab proxy-on</code> · drive app · read Burp history</td></tr>
+<tr><td>Cleanup</td><td><code>alab proxy-off &amp;&amp; alab frida-stop &amp;&amp; alab stop</code></td></tr>
+</table>
+
+<h2>7.4 · Pro tip — feed the agent the doc</h2>
+<pre>claude &lt; ~/tools/android-lab/docs/ALAB-INSTALL.md
+<span class="comment"># or</span>
+gemini -p "$(cat ~/tools/android-lab/docs/ALAB-INSTALL.md) Now boot the lab and decompile /tmp/x.apk."</pre>
+
+<!-- ════════════════════ §8 ════════════════════ -->
+<h1><span class="num">08</span>Troubleshooting</h1>
+<table>
+<tr><th>Issue</th><th>Fix</th></tr>
+<tr><td>Emulator slow / black screen</td><td>KVM/HVF check · user in <code>kvm</code> group · <code>-gpu swangle</code> fallback</td></tr>
+<tr><td><code>adb root</code> fails</td><td>Image must be <code>google_apis</code>, not <code>google_apis_playstore</code></td></tr>
+<tr><td>Frida version mismatch</td><td><code>frida --version</code> == frida-server binary version</td></tr>
+<tr><td>Burp cert not trusted</td><td>Re-run <code>alab burp-cert</code>; system cert needs <code>-writable-system</code></td></tr>
+<tr><td>Proxy not intercepting</td><td>Burp listener on <code>0.0.0.0:8080</code> (AVD uses <code>10.0.2.2</code>)</td></tr>
+<tr><td>App detects root → exits</td><td><code>alab denylist-add com.target.app</code> + objection root-disable hook</td></tr>
+<tr><td><code>frida-ps -U</code> empty</td><td>Re-run <code>alab frida</code> — server dies on reboot</td></tr>
+<tr><td>TLS still blocked</td><td><code>alab unpin-frida &lt;pkg&gt;</code> — covers OkHttp3, TrustKit, TM, WebView, NSC</td></tr>
+<tr><td>Lock file blocks emulator</td><td><code>rm ~/.android/avd/Pixel6_API33_root.avd/hardware-qemu.ini.lock</code></td></tr>
+<tr><td>WSL2 <code>/dev/kvm</code> missing</td><td>Enable Hyper-V on Windows + <code>sudo apt install qemu-kvm</code> in WSL</td></tr>
+<tr><td>macOS Apple Silicon slow</td><td>Use <code>arm64-v8a</code> system image, never x86_64</td></tr>
+</table>
+
+<!-- ════════════════════ §9 ════════════════════ -->
+<h1><span class="num">09</span>Layout</h1>
+<pre>~/tools/android-lab/
+├── start-lab.sh                <span class="comment"># alab dispatcher</span>
+├── unpin.sh                    <span class="comment"># SSL unpin wrapper</span>
+├── magisk-root.sh              <span class="comment"># Magisk install helper</span>
+├── frida/
+│   └── frida-server            <span class="comment"># arch-matched binary</span>
+├── frida-scripts/
+│   └── universal-ssl-unpin.js  <span class="comment"># OkHttp3·TrustKit·TM·WebView·NSC</span>
+├── jadx/bin/jadx
+├── dex2jar/dex2jar/d2j-dex2jar.sh
+├── magisk/Magisk-v28.1.apk
+├── burp/
+│   ├── cacert.der              <span class="comment"># exported from Burp</span>
+│   └── cacert.pem              <span class="comment"># auto-generated</span>
+├── apks/                       <span class="comment"># drop targets here</span>
+└── docs/
+    ├── ALAB-INSTALL.md
+    └── ALAB-INSTALL.pdf</pre>
+
+<div class="footer-rule"></div>
+<div class="footer-text">// alab v2.0  ·  developed by hits  ·  built by human + AI (Opus 4.6)  ·  github.com/hits313/alab //</div>
+
+</body>
+</html>
