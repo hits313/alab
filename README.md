@@ -48,13 +48,17 @@ $ alab start
 ## Features
 
 - **One-command bring-up** — `alab start` → boots, roots, proxies, zygisks
+- **🎯 Hunt mode** — `alab hunt com.x.y` runs APK pull → jadx → apkleaks → manifest → exported components → **REPORT.md**, fully automated
+- **🩺 Doctor** — `alab doctor` validates KVM, SDK, frida version sync, Burp listener, every tool, with the exact remediation command per failed check
+- **🔄 Frida-sync** — `alab frida-sync` auto-downloads the right `frida-server` for your host frida-tools and device ABI
 - **System-cert Burp install** — TLS intercept with no app-level proxy
 - **Magisk + Zygisk + DenyList** — pre-wired for root-detection-bypass
-- **Universal SSL unpinning** — OkHttp3, TrustKit, TrustManager, WebView, NSC
-- **APK toolchain** — jadx, apktool, dex2jar, apkleaks, androguard
+- **Full bypass bundle** — `alab unpin-full <pkg>` chains SSL + root + RASP in one Frida load
+- **APK toolchain** — jadx, apktool, dex2jar, apkleaks, androguard (handles split APKs)
 - **Frida 17.2.14** — host tools + server binary pinned to matching version
 - **CLI agent ready** — drop-in configs for Claude Code & Gemini CLI
 - **Cross-platform** — Linux, macOS (Apple Silicon + Intel), Windows (WSL2 + native)
+- **Tab completion** — bash/zsh; tab-completes installed packages live from the device
 
 ---
 
@@ -94,17 +98,26 @@ git clone https://github.com/hits313/alab.git ~/tools/android-lab
 | Boot      | `alab start`                           | Boot AVD, auto-root, proxy on, zygisk on    |
 | Boot      | `alab setup`                           | Full chain: root + frida + burp-cert + proxy|
 | Boot      | `alab status`                          | Device · root · magisk · frida · proxy      |
-| Intercept | `alab frida`                           | Push + start frida-server                   |
+| Health    | **`alab doctor`**                      | Env health check — KVM/SDK/frida sync/Burp  |
+| Health    | **`alab version`**                     | alab + frida + magisk + AVD versions        |
+| Frida     | `alab frida`                           | Push + start frida-server                   |
+| Frida     | **`alab frida-sync`**                  | Auto-grab frida-server matching host tools  |
 | Intercept | `alab burp-cert`                       | Install Burp CA as system cert + reboot     |
 | Intercept | `alab proxy-on` / `proxy-off`          | Toggle Burp proxy                           |
+| Intercept | **`alab certs`**                       | List trusted CAs + Burp cert status         |
 | Unpin     | `alab unpin com.bank.app`              | objection SSL unpin                         |
-| Unpin     | `alab unpin-frida com.bank.app`        | Frida universal SSL unpin                   |
-| APK       | `alab install app.apk`                 | adb install -r                              |
+| Unpin     | `alab unpin-frida com.bank.app`        | Frida multi-stack SSL unpin                 |
+| Unpin     | **`alab unpin-full com.bank.app`**     | SSL + root + RASP (chained)                 |
+| APK       | `alab install app.apk [splits...]`     | install -r / install-multiple               |
+| APK       | `alab pull-apk com.x.y`                | Pull APK (handles splits)                   |
 | APK       | `alab decompile app.apk`               | jadx → `/tmp/jadx-<name>/`                  |
 | APK       | `alab strings app.apk`                 | apkleaks — secrets + endpoints              |
 | APK       | `alab manifest app.apk`                | Dump AndroidManifest.xml                    |
+| APK       | **`alab grep <pkg> <regex>`**          | grep decompiled sources                     |
+| **Hunt**  | **`alab hunt com.x.y`**                | **Auto recon → REPORT.md at ~/hunt/<pkg>/** |
 | Device    | `alab logcat com.x.y`                  | Filtered live logcat                        |
 | Device    | `alab pull-data com.x.y`               | Pull `/data/data/<pkg>`                     |
+| Device    | **`alab snapshot {save\|load\|list}`** | AVD state snapshots                         |
 | Magisk    | `alab denylist-add com.x.y`            | Hide root from package                      |
 
 Run `alab` with no args for the full menu.
@@ -208,13 +221,19 @@ The agent sequences `alab` commands, parses decompiled output, writes Frida hook
 ```
 alab/
 ├── start-lab.sh                # main dispatcher (the `alab` command)
-├── unpin.sh                    # SSL unpin wrapper
+├── unpin.sh                    # SSL/RASP/root unpin wrapper
 ├── magisk-root.sh              # Magisk install helper
+├── CHANGELOG.md
+├── completions/
+│   └── alab.bash               # bash/zsh tab completion
 ├── frida-scripts/
-│   └── universal-ssl-unpin.js  # OkHttp3 + TrustKit + TM + WebView + NSC
+│   ├── README.md
+│   ├── android/                # root-bypass, rasp-bypass, ssl-multi-unpin, biometric, webview
+│   ├── ios/                    # jailbreak-bypass, ssl-bypass, anti-frida-bypass
+│   └── universal-ssl-unpin.js
 ├── docs/
 │   ├── ALAB-INSTALL.md         # full install + ops guide
-│   └── ALAB-INSTALL.pdf        # dark-mode PDF
+│   └── ALAB-Framework-Guide.pdf
 ├── LICENSE
 └── README.md
 ```
