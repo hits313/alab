@@ -111,6 +111,72 @@ Run `alab` with no args for the full menu.
 
 ---
 
+## Frida Scripts
+
+A curated bundle ships under [`frida-scripts/`](frida-scripts/) — production-quality bypasses for both Android and iOS. Each script credits its upstream sources inline.
+
+### Android — `frida-scripts/android/`
+
+| Script | What it bypasses |
+|---|---|
+| [`root-bypass.js`](frida-scripts/android/root-bypass.js) | RootBeer · su binary · Magisk paths · build tags · SafetyNet basic |
+| [`rasp-bypass.js`](frida-scripts/android/rasp-bypass.js) | Anti-debug · anti-emulator · anti-Frida · anti-Xposed · ptrace · self-kill |
+| [`ssl-multi-unpin.js`](frida-scripts/android/ssl-multi-unpin.js) | OkHttp3/4 · Conscrypt · TrustKit · NSC · React-Native · Cordova · Cronet |
+| [`biometric-bypass.js`](frida-scripts/android/biometric-bypass.js) | BiometricPrompt · FingerprintManager forced-success |
+| [`webview-debug.js`](frida-scripts/android/webview-debug.js) | Force `setWebContentsDebuggingEnabled(true)` for chrome://inspect |
+
+### iOS — `frida-scripts/ios/`
+
+| Script | What it bypasses |
+|---|---|
+| [`jailbreak-bypass.js`](frida-scripts/ios/jailbreak-bypass.js) | File/URL-scheme/fork/dyld/IOSSecuritySuite JB checks |
+| [`ssl-bypass.js`](frida-scripts/ios/ssl-bypass.js) | BoringSSL · SecTrustEvaluate · AFNetworking · TrustKit |
+| [`anti-frida-bypass.js`](frida-scripts/ios/anti-frida-bypass.js) | sysctl P_TRACED · port 27042 · dyld frida-* cloak |
+
+### Run via alab wrapper
+
+```bash
+alab unpin com.bank.app                  # objection one-liner
+bash unpin.sh com.bank.app full          # Android: SSL + root + RASP
+bash unpin.sh com.bank.ios ios-full      # iOS: JB + SSL + anti-Frida
+```
+
+Or chain manually with Frida:
+
+```bash
+frida -U -f com.target.app \
+  -l frida-scripts/android/root-bypass.js \
+  -l frida-scripts/android/rasp-bypass.js \
+  -l frida-scripts/android/ssl-multi-unpin.js \
+  --no-pause
+```
+
+See [`frida-scripts/README.md`](frida-scripts/README.md) for the full inventory and credits.
+
+---
+
+## Credits — upstream Frida research
+
+These scripts adapt techniques from the following public projects. **Star their repos** — that's where the research lives.
+
+| Project | Source |
+|---|---|
+| iddoeldor / **frida-snippets** | https://github.com/iddoeldor/frida-snippets |
+| httptoolkit / **frida-interception-and-unpinning** | https://github.com/httptoolkit/frida-interception-and-unpinning |
+| sensepost / **objection** | https://github.com/sensepost/objection |
+| WithSecureLabs / **android-keystore-audit** | https://github.com/WithSecureLabs/android-keystore-audit |
+| dki / **ios10-ssl-bypass** | https://codeshare.frida.re/@dki/ios10-ssl-bypass/ |
+| nabla-c0d3 / **ssl-kill-switch2** | https://github.com/nabla-c0d3/ssl-kill-switch2 |
+| Areizen / **iOS-Jailbreak-Detection-Bypass** | https://github.com/Areizen/iOS-Jailbreak-Detection-Bypass |
+| r0ysue / **AndroidSecurityStudy** | https://github.com/r0ysue/AndroidSecurityStudy |
+| Ch0pin / **medusa** | https://github.com/Ch0pin/medusa |
+| Areizen / **Android-Application-Pentest-Roadmap** | https://github.com/Areizen/Android-Application-Pentest-Roadmap |
+| **Frida Codeshare** community | https://codeshare.frida.re |
+
+Patterns drawn from the projects above retain their original licenses (MIT / Apache-2.0 / Frida-codeshare terms). Original alab code is MIT.
+
+---
+
 ## Driving alab with a CLI agent
 
 Both **Claude Code** and **Gemini CLI** can drive alab end-to-end. Sample workflow:
