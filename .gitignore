@@ -9,9 +9,20 @@ dex2jar/
 apks/
 *.apk
 
-# Burp certs (per-user)
-burp/cacert.der
-burp/cacert.pem
+# Burp / proxy certs — per-user, never commit
+burp/
+*.der
+*.pem
+*.cer
+*.crt
+*.p12
+*.pfx
+*.key
+.cert-hash
+
+# hunt output (target-specific, may contain client data)
+hunt/
+/tmp/hunt-*
 
 # emulator state
 *.log
